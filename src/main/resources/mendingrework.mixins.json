@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "dusk.mendingrework.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "AnvilMixin",
+    "NetheriteToolMaterialMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}
