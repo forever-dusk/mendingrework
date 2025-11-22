@@ -41,16 +41,5 @@ public class MendingRework {
         event.modify(Items.TRIDENT, builder -> builder.set(
                 DataComponents.REPAIRABLE,
                 new Repairable(HolderSet.direct(Items.DIAMOND.builtInRegistryHolder()))));
-        event.modify(Items.CARROT_ON_A_STICK, builder -> builder.set(
-                DataComponents.REPAIRABLE,
-                new Repairable(HolderSet.direct(Items.CARROT.builtInRegistryHolder()))));
-        event.modify(Items.WARPED_FUNGUS_ON_A_STICK, builder -> builder.set(
-                DataComponents.REPAIRABLE,
-                new Repairable(HolderSet.direct(Items.WARPED_FUNGUS.builtInRegistryHolder()))));
-
-        event.modifyMatching(item -> item.getDefaultInstance().isCombineRepairable() &&
-                !item.getDefaultInstance().has(DataComponents.REPAIRABLE), builder -> builder.set(
-                DataComponents.REPAIRABLE,
-                new Repairable(HolderSet.direct(Items.EXPERIENCE_BOTTLE.builtInRegistryHolder()))));
     }
 }

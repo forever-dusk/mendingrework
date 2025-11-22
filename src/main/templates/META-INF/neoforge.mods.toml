@@ -1,12 +1,12 @@
 license="LGPL-3.0"
-#issueTrackerURL=""
+issueTrackerURL="https://github.com/forever-dusk/mendingrework"
 
 [[mods]]
 modId="mendingrework"
 version="0.3"
 displayName="Mending Rework"
 
-#displayURL=""
+displayURL="https://www.youtube.com/@forever_dusk"
 logoFile="mendingrework.png"
 #credits=""
 
