@@ -1,12 +1,15 @@
+modLoader="javafml"
+
+loaderVersion="${loader_version_range}"
 license="LGPL-3.0"
-issueTrackerURL="https://github.com/forever-dusk/mendingrework"
+#issueTrackerURL=""
 
 [[mods]]
 modId="mendingrework"
 version="0.3"
 displayName="Mending Rework"
 
-displayURL="https://www.youtube.com/@forever_dusk"
+#displayURL=""
 logoFile="mendingrework.png"
 #credits=""
 

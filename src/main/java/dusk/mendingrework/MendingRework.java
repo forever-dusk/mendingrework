@@ -1,45 +1,35 @@
 package dusk.mendingrework;
 
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Repairable;
-import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.player.AnvilRepairEvent;
+
+import java.util.Objects;
 
 @Mod(MendingRework.MODID)
 public class MendingRework {
     public static final String MODID = "mendingrework";
 
-    public MendingRework(IEventBus modEventBus, ModContainer ignoredModContainer) {
-        modEventBus.addListener(this::alterRepairMaterials);
+    public MendingRework(IEventBus ignoredModEventBus, ModContainer ignoredModContainer) {
+        NeoForge.EVENT_BUS.register(this);
     }
 
-    @SuppressWarnings("deprecation")
-    public void alterRepairMaterials(ModifyDefaultComponentsEvent event) {
-        event.modify(Items.BOW, builder -> builder.set(
-                DataComponents.REPAIRABLE,
-                new Repairable(HolderSet.direct(Items.STRING.builtInRegistryHolder()))));
-        event.modify(Items.FISHING_ROD, builder -> builder.set(
-                DataComponents.REPAIRABLE,
-                new Repairable(HolderSet.direct(Items.STRING.builtInRegistryHolder()))));
-        event.modify(Items.BRUSH, builder -> builder.set(
-                DataComponents.REPAIRABLE,
-                new Repairable(HolderSet.direct(Items.FEATHER.builtInRegistryHolder()))));
-        event.modify(Items.FLINT_AND_STEEL, builder -> builder.set(
-                DataComponents.REPAIRABLE,
-                new Repairable(HolderSet.direct(Items.FLINT.builtInRegistryHolder()))));
-        event.modify(Items.CROSSBOW, builder -> builder.set(
-                DataComponents.REPAIRABLE,
-                new Repairable(HolderSet.direct(Items.IRON_INGOT.builtInRegistryHolder()))));
-        event.modify(Items.SHEARS, builder -> builder.set(
-                DataComponents.REPAIRABLE,
-                new Repairable(HolderSet.direct(Items.IRON_INGOT.builtInRegistryHolder()))));
-        event.modify(Items.TRIDENT, builder -> builder.set(
-                DataComponents.REPAIRABLE,
-                new Repairable(HolderSet.direct(Items.DIAMOND.builtInRegistryHolder()))));
+    @SubscribeEvent
+    public void modifyAnvilDamage(AnvilRepairEvent event) {
+        event.setBreakChance(0.06f);
+        if (Objects.requireNonNull(event.getLeft()
+                .get(DataComponents.ENCHANTMENTS)).toString().contains("Mending")) {
+            if (event.getLeft().getItem().isValidRepairItem(event.getLeft(), event.getRight())) {
+                event.setBreakChance(0);
+            } else if (!event.getLeft().getHoverName().equals(event.getOutput().getHoverName())
+                    && event.getRight().isEmpty()) {
+                event.setBreakChance(0);
+            }
+        }
     }
 }
