@@ -1,0 +1,34 @@
+{
+	"schemaVersion": 1,
+	"id": "mendingrework",
+	"version": "0.3",
+	"name": "Mending Rework",
+	"description": "Repair items without experience.",
+	"authors": [
+		"Dusk"
+	],
+	"contact": {
+		"homepage": "https://www.youtube.com/@forever_dusk",
+		"sources": "https://github.com/forever-dusk/mendingrework"
+	},
+	"license": "LGPL-3.0",
+	"icon": "mendingrework.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"dusk.mendingrework.MendingRework"
+		]
+	},
+	"mixins": [
+		"mendingrework.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.18.1",
+		"minecraft": "~1.21.10",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

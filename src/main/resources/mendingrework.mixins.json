@@ -4,13 +4,18 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "AnvilMixin",
+    "BrushMixin",
+    "CrossbowMixin",
+    "FishingRodMixin",
     "ItemStackMixin",
-    "NetheriteToolMaterialMixin"
+    "NetheriteToolMaterialMixin",
+    "ShearsMixin",
+    "TridentMixin"
   ],
   "injectors": {
-    "defaultRequire": 0
+    "defaultRequire": 1
   },
   "overwrites": {
     "requireAnnotations": true
-  }
+	}
 }

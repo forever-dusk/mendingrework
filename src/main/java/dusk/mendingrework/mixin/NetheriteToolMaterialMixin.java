@@ -22,7 +22,7 @@ public class NetheriteToolMaterialMixin {
     public static ToolMaterial NETHERITE;
 
     @Inject(method = "applyToolProperties", at = @At("HEAD"))
-    public void changeNetheriteToolRepairMaterial(Item.Properties properties, TagKey<Block> mineableBlocks, float attackDamage, float attackSpeed, float disableBlockingForSeconfs, CallbackInfoReturnable<Item.Properties> cir) {
+    public void changeNetheriteToolRepairMaterial(Item.Properties properties, TagKey<Block> tagKey, float f, float g, float h, CallbackInfoReturnable<Item.Properties> cir) {
         NETHERITE = new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 2031, 9.0F, 4.0F, 15, ItemTags.REPAIRS_NETHERITE_ARMOR);
     }
 }

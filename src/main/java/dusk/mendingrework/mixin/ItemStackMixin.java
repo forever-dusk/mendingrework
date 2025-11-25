@@ -16,15 +16,26 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
     @Shadow
-    public abstract boolean is(TagKey<Item> tag);
+    public abstract boolean is(TagKey<Item> tagKey);
 
     @Shadow
     public abstract DataComponentMap getComponents();
 
+    @Shadow
+    public abstract boolean is(Item item);
+
     @Inject(method = "isValidRepairItem", at = @At("HEAD"), cancellable = true)
-    public void addDefaultRepairMaterial(ItemStack item, CallbackInfoReturnable<Boolean> cir) {
-        if (this.is(ItemTags.DURABILITY_ENCHANTABLE) && !this.getComponents().has(DataComponents.REPAIRABLE)
-            && item.is(Items.EXPERIENCE_BOTTLE)) {
+    public void addDefaultRepairItem(ItemStack itemStack, CallbackInfoReturnable<Boolean> cir) {
+        if (this.is(Items.BOW)) {
+            if (itemStack.is(Items.STRING)) {
+                cir.setReturnValue(true);
+            }
+        } else if (this.is(Items.FLINT_AND_STEEL)) {
+            if (itemStack.is(Items.FLINT)) {
+                cir.setReturnValue(true);
+            }
+        } else if (this.is(ItemTags.DURABILITY_ENCHANTABLE) && !this.getComponents().has(DataComponents.REPAIRABLE)
+                && itemStack.is(Items.EXPERIENCE_BOTTLE)) {
             cir.setReturnValue(true);
         }
     }
