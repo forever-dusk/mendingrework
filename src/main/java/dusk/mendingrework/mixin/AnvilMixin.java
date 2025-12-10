@@ -13,6 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AnvilBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -27,42 +28,43 @@ import java.util.function.BiConsumer;
 
 @Mixin(AnvilMenu.class)
 public abstract class AnvilMixin extends ItemCombinerMenu {
-    public AnvilMixin(@Nullable MenuType<?> menuType, int containerId, Inventory inventory, ContainerLevelAccess access, ItemCombinerMenuSlotDefinition slotDefinition) {
-        super(menuType, containerId, inventory, access, slotDefinition);
-    }
-
     @Shadow
-    public int repairItemCountCost;
-
-    @Shadow
-    public abstract void setCost(int value);
-
-    @Shadow
-    @javax.annotation.Nullable
-    private String itemName;
+    private int repairItemCountCost;
 
     @Shadow
     public abstract int getCost();
 
-    @Unique
-    public boolean mendingrework_1_21_10_neo$onlyRepairing = false;
+    @Shadow
+    @Final
+    private DataSlot cost;
+
+    @Shadow
+    @Nullable
+    private String itemName;
 
     @Unique
-    public boolean mendingrework_1_21_10_neo$mendingRepair = false;
+    public boolean mendingrework_1_21_10_fabric$onlyRepairing = false;
+
+    @Unique
+    public boolean mendingrework_1_21_10_fabric$mendingRepair = false;
+
+    public AnvilMixin(@Nullable MenuType<?> menuType, int i, Inventory inventory, ContainerLevelAccess containerLevelAccess, ItemCombinerMenuSlotDefinition itemCombinerMenuSlotDefinition) {
+        super(menuType, i, inventory, containerLevelAccess, itemCombinerMenuSlotDefinition);
+    }
 
     @Inject(method = "mayPickup", at = @At("TAIL"), cancellable = true)
     public void allowZeroCost(Player player, boolean hasItem, CallbackInfoReturnable<Boolean> cir) {
-        if (mendingrework_1_21_10_neo$onlyRepairing) {
+        if (mendingrework_1_21_10_fabric$onlyRepairing) {
             cir.setReturnValue(true);
         }
     }
 
-    @Inject(method = "createResultInternal", at = @At("HEAD"))
+    @Inject(method = "createResult", at = @At("HEAD"))
     public void resetRepairingStatus(CallbackInfo ci) {
-        mendingrework_1_21_10_neo$onlyRepairing = false;
+        mendingrework_1_21_10_fabric$onlyRepairing = false;
     }
 
-    @Inject(method = "createResultInternal", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/AnvilMenu;broadcastChanges()V"))
+    @Inject(method = "createResult", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/AnvilMenu;broadcastChanges()V"))
     public void removeRepairCost(CallbackInfo ci) {
         if (this.repairItemCountCost > 0) {
             ItemStack inputItem = this.inputSlots.getItem(0).copy();
@@ -92,34 +94,32 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
                 this.repairItemCountCost = timesRepaired;
             }
 
-            mendingrework_1_21_10_neo$onlyRepairing = true;
+            mendingrework_1_21_10_fabric$onlyRepairing = true;
             if (this.itemName != null && !StringUtil.isBlank(this.itemName)) {
                 if (!this.itemName.equals(inputItem.getHoverName().getString())) {
                     outputItem.set(DataComponents.CUSTOM_NAME, Component.literal(this.itemName));
-                    mendingrework_1_21_10_neo$onlyRepairing = false;
+                    mendingrework_1_21_10_fabric$onlyRepairing = false;
                 }
             } else if (inputItem.has(DataComponents.CUSTOM_NAME)) {
                 outputItem.remove(DataComponents.CUSTOM_NAME);
-                mendingrework_1_21_10_neo$onlyRepairing = false;
+                mendingrework_1_21_10_fabric$onlyRepairing = false;
             }
 
-            if (mendingrework_1_21_10_neo$onlyRepairing) {
-                this.setCost(0);
+            if (mendingrework_1_21_10_fabric$onlyRepairing) {
+                this.cost.set(0);
             } else {
-                this.setCost(Math.min(39, this.getCost() - this.repairItemCountCost));
+                this.cost.set(Math.min(39, this.getCost() - this.repairItemCountCost));
             }
             this.resultSlots.setItem(0, outputItem);
         }
     }
 
-    @Inject(method = "onTake", at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/event/entity/player/AnvilCraftEvent$Pre;isCanceled()Z"))
-    public void detectMendingRepair(Player p_150474_, ItemStack p_150475_, CallbackInfo ci) {
-        if (!ci.isCancelled()) {
-            if (Objects.requireNonNull(this.inputSlots.getItem(0)
-                    .get(DataComponents.ENCHANTMENTS)).toString().contains("Mending")) {
-                if (this.repairItemCountCost > 0 || this.inputSlots.getItem(1).isEmpty()) {
-                    mendingrework_1_21_10_neo$mendingRepair = true;
-                }
+    @Inject(method = "onTake", at = @At("HEAD"))
+    public void detectMendingRepair(Player player, ItemStack itemStack, CallbackInfo ci) {
+        if (Objects.requireNonNull(this.inputSlots.getItem(0)
+                .get(DataComponents.ENCHANTMENTS)).toString().contains("Mending")) {
+            if (this.repairItemCountCost > 0 || this.inputSlots.getItem(1).isEmpty()) {
+                mendingrework_1_21_10_fabric$mendingRepair = true;
             }
         }
     }
@@ -129,7 +129,7 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
         this.access.execute((level, blockPos) -> {
             BlockState oldAnvilBlockState = level.getBlockState(blockPos);
             if (!this.player.hasInfiniteMaterials() && oldAnvilBlockState.is(BlockTags.ANVIL)
-                    && !mendingrework_1_21_10_neo$mendingRepair && this.player.getRandom().nextFloat() < 0.06F) {
+                    && !mendingrework_1_21_10_fabric$mendingRepair && this.player.getRandom().nextFloat() < 0.06F) {
                 BlockState newAnvilBlockState = AnvilBlock.damage(oldAnvilBlockState);
                 if (newAnvilBlockState == null) {
                     level.removeBlock(blockPos, false);
@@ -142,6 +142,6 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
                 level.levelEvent(1030, blockPos, 0);
             }
         });
-        mendingrework_1_21_10_neo$mendingRepair = false;
+        mendingrework_1_21_10_fabric$mendingRepair = false;
     }
 }
