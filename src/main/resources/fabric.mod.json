@@ -1,7 +1,7 @@
 {
 	"schemaVersion": 1,
 	"id": "mendingrework",
-	"version": "0.3",
+	"version": "0.4",
 	"name": "Mending Rework",
 	"description": "Repair items without experience.",
 	"authors": [
@@ -17,7 +17,10 @@
 	"entrypoints": {
 		"main": [
 			"dusk.mendingrework.MendingRework"
-		]
+		],
+      "jei_mod_plugin": [
+        "dusk.mendingrework.compat.JEIMendingReworkPlugin"
+      ]
 	},
 	"mixins": [
 		"mendingrework.mixins.json"
