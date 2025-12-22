@@ -43,10 +43,10 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
     private String itemName;
 
     @Unique
-    public boolean mendingrework_1_21_10_fabric$onlyRepairing = false;
+    public boolean mendingrework_1_21_11_fabric$onlyRepairing = false;
 
     @Unique
-    public boolean mendingrework_1_21_10_fabric$mendingRepair = false;
+    public boolean mendingrework_1_21_11_fabric$mendingRepair = false;
 
     public AnvilMixin(@Nullable MenuType<?> menuType, int i, Inventory inventory, ContainerLevelAccess containerLevelAccess, ItemCombinerMenuSlotDefinition itemCombinerMenuSlotDefinition) {
         super(menuType, i, inventory, containerLevelAccess, itemCombinerMenuSlotDefinition);
@@ -54,14 +54,14 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
 
     @Inject(method = "mayPickup", at = @At("TAIL"), cancellable = true)
     public void allowZeroCost(Player player, boolean hasItem, CallbackInfoReturnable<Boolean> cir) {
-        if (mendingrework_1_21_10_fabric$onlyRepairing) {
+        if (mendingrework_1_21_11_fabric$onlyRepairing) {
             cir.setReturnValue(true);
         }
     }
 
     @Inject(method = "createResult", at = @At("HEAD"))
     public void resetRepairingStatus(CallbackInfo ci) {
-        mendingrework_1_21_10_fabric$onlyRepairing = false;
+        mendingrework_1_21_11_fabric$onlyRepairing = false;
     }
 
     @Inject(method = "createResult", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/AnvilMenu;broadcastChanges()V"))
@@ -94,18 +94,18 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
                 this.repairItemCountCost = timesRepaired;
             }
 
-            mendingrework_1_21_10_fabric$onlyRepairing = true;
+            mendingrework_1_21_11_fabric$onlyRepairing = true;
             if (this.itemName != null && !StringUtil.isBlank(this.itemName)) {
                 if (!this.itemName.equals(inputItem.getHoverName().getString())) {
                     outputItem.set(DataComponents.CUSTOM_NAME, Component.literal(this.itemName));
-                    mendingrework_1_21_10_fabric$onlyRepairing = false;
+                    mendingrework_1_21_11_fabric$onlyRepairing = false;
                 }
             } else if (inputItem.has(DataComponents.CUSTOM_NAME)) {
                 outputItem.remove(DataComponents.CUSTOM_NAME);
-                mendingrework_1_21_10_fabric$onlyRepairing = false;
+                mendingrework_1_21_11_fabric$onlyRepairing = false;
             }
 
-            if (mendingrework_1_21_10_fabric$onlyRepairing) {
+            if (mendingrework_1_21_11_fabric$onlyRepairing) {
                 this.cost.set(0);
             } else {
                 this.cost.set(Math.min(39, this.getCost() - this.repairItemCountCost));
@@ -119,7 +119,7 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
         if (Objects.requireNonNull(this.inputSlots.getItem(0)
                 .get(DataComponents.ENCHANTMENTS)).toString().contains("Mending")) {
             if (this.repairItemCountCost > 0 || this.inputSlots.getItem(1).isEmpty()) {
-                mendingrework_1_21_10_fabric$mendingRepair = true;
+                mendingrework_1_21_11_fabric$mendingRepair = true;
             }
         }
     }
@@ -129,7 +129,7 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
         this.access.execute((level, blockPos) -> {
             BlockState oldAnvilBlockState = level.getBlockState(blockPos);
             if (!this.player.hasInfiniteMaterials() && oldAnvilBlockState.is(BlockTags.ANVIL)
-                    && !mendingrework_1_21_10_fabric$mendingRepair && this.player.getRandom().nextFloat() < 0.06F) {
+                    && !mendingrework_1_21_11_fabric$mendingRepair && this.player.getRandom().nextFloat() < 0.06F) {
                 BlockState newAnvilBlockState = AnvilBlock.damage(oldAnvilBlockState);
                 if (newAnvilBlockState == null) {
                     level.removeBlock(blockPos, false);
@@ -142,6 +142,6 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
                 level.levelEvent(1030, blockPos, 0);
             }
         });
-        mendingrework_1_21_10_fabric$mendingRepair = false;
+        mendingrework_1_21_11_fabric$mendingRepair = false;
     }
 }
